@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Record video · Gravelbox</title>
+    <link rel="stylesheet" href="recorder.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Gravelbox</h1>
+        <span>Recordings</span>
+      </header>
+
+      <section class="panel" aria-labelledby="recordTitle">
+        <div class="section-heading">
+          <div>
+            <h2 id="recordTitle">Record a new video</h2>
+            <p>Capture at 1920×1080 and 30 FPS, with microphone audio.</p>
+          </div>
+        </div>
+        <video id="cameraPreview" autoplay muted playsinline></video>
+        <video id="recordingPreview" controls playsinline hidden></video>
+        <div class="toolbar">
+          <button id="startRecording" type="button">Start recording</button>
+          <button id="stopRecording" type="button" disabled>Stop recording</button>
+          <button id="saveRecording" type="button" disabled>Save and use recording</button>
+        </div>
+        <p id="status" role="status">Ready to record.</p>
+      </section>
+
+      <section id="library" class="panel" aria-labelledby="libraryTitle">
+        <div class="section-heading">
+          <div>
+            <h2 id="libraryTitle">Library</h2>
+            <p>Saved locally in this Chrome profile. Choose a video to loop.</p>
+          </div>
+        </div>
+        <div id="libraryGrid" class="library-grid"></div>
+      </section>
+    </main>
+    <script src="recorder.js"></script>
+  </body>
+</html>

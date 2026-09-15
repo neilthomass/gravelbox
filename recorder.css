@@ -1,0 +1,29 @@
+:root { color-scheme: light; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+* { box-sizing: border-box; }
+body { margin: 0; color: #1e1e1e; background: #f5f5f5; }
+main { width: min(920px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 64px; }
+header { display: flex; align-items: baseline; justify-content: space-between; padding: 0 0 20px; }
+h1 { margin: 0; font-size: 20px; font-weight: 600; }
+header span { color: #777; font-size: 12px; }
+.panel { margin-bottom: 16px; padding: 20px; border: 1px solid #e5e5e5; border-radius: 8px; background: #fff; }
+.section-heading { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+h2 { margin: 0 0 4px; font-size: 16px; font-weight: 600; }
+p { margin: 0; color: #777; font-size: 12px; line-height: 1.5; }
+video { display: block; width: 100%; aspect-ratio: 16 / 9; border-radius: 6px; background: #111; object-fit: contain; }
+video[hidden] { display: none; }
+.toolbar, .card-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+button, .download-link { min-height: 34px; padding: 7px 12px; border: 1px solid #d0d0d0; border-radius: 6px; color: #1e1e1e; background: #fff; cursor: pointer; font: inherit; font-size: 12px; text-decoration: none; }
+button:hover, .download-link:hover { background: #f5f5f5; }
+button:focus-visible, .download-link:focus-visible { outline: 2px solid #0d99ff; outline-offset: 2px; }
+button:disabled { cursor: default; opacity: .5; }
+#startRecording, #saveRecording, .use-button { color: #fff; border-color: #0d99ff; background: #0d99ff; }
+#startRecording:hover, #saveRecording:hover, .use-button:hover { background: #0b87e3; }
+#status { min-height: 18px; margin-top: 12px; }
+#status.error { color: #ba2b2b; }
+.library-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.recording-card { min-width: 0; padding: 12px; border: 1px solid #e5e5e5; border-radius: 6px; }
+.recording-card.active { border-color: #0d99ff; }
+.recording-card video { margin-bottom: 10px; }
+.recording-card h3 { overflow: hidden; margin: 0 0 2px; font-size: 13px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.recording-card p { font-size: 11px; }
+.empty { padding: 20px 0; }

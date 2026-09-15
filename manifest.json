@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "Gravelbox",
+  "version": "1.4.2",
+  "description": "Supplies a looping video in place of your physical camera.",
+  "permissions": ["storage", "activeTab"],
+  "background": {
+    "service_worker": "service-worker.js"
+  },
+  "host_permissions": ["<all_urls>"],
+  "action": {
+    "default_title": "Gravelbox",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["page-camera.js"],
+      "run_at": "document_start",
+      "world": "MAIN",
+      "all_frames": true,
+      "match_about_blank": true,
+      "match_origin_as_fallback": true
+    },
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_start",
+      "world": "ISOLATED",
+      "all_frames": true,
+      "match_about_blank": true,
+      "match_origin_as_fallback": true
+    }
+  ]
+}

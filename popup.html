@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gravelbox</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <div class="header-line">
+          <h1>Gravelbox</h1>
+          <span id="cameraStatus" class="camera-status" data-state="loading" role="status" aria-live="polite">
+            <i aria-hidden="true"></i><span id="cameraStatusLabel">Loading</span>
+          </span>
+        </div>
+        <p>Control each feature separately.</p>
+      </header>
+
+      <label class="feature">
+        <span><strong>Loop camera</strong><small>Use the active library video</small></span>
+        <span class="switch">
+          <input id="cameraEnabled" type="checkbox" />
+          <i aria-hidden="true"></i>
+        </span>
+      </label>
+
+      <label class="recording-picker">
+        <span>Loop video</span>
+        <select id="recordingSelector">
+          <option value="">Choose a recording…</option>
+        </select>
+      </label>
+
+      <label class="feature">
+        <span><strong>Virtual microphone</strong><small>Use the active video's audio</small></span>
+        <span class="switch">
+          <input id="audioMuted" type="checkbox" checked />
+          <i aria-hidden="true"></i>
+        </span>
+      </label>
+
+      <label class="feature">
+        <span><strong>Block function keys</strong><small>Hide F1–F24 from websites</small></span>
+        <span class="switch">
+          <input id="functionKeysBlocked" type="checkbox" checked />
+          <i aria-hidden="true"></i>
+        </span>
+      </label>
+
+      <button id="openRecorder" class="recorder-link" type="button">
+        Record and manage videos
+      </button>
+
+    </main>
+    <script src="popup.js"></script>
+  </body>
+</html>
