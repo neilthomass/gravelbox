@@ -3,7 +3,8 @@
   "name": "Gravelbox",
   "version": "1.4.2",
   "description": "Supplies a looping video in place of your physical camera.",
-  "permissions": ["storage", "activeTab"],
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzTk1C+DaqrLmFQ5iXMeXqqy4SMYjG/WFEuPsOX6NgzCB5izjT/elNULmdx6Zi6P8Xby4saseNLrv/cn9SJKkSd4K0vWIjJxvrs9k3QHXxieUUt0UvZy9uS9JNVNr0pqQNcVn84Mw6cF9C/zyPZEbKk/+q9LAy5v2wrcS7oJZpHKiK4GZkqqgyF5dXDJH8S4lRrQXvjK8E72WcFldr7QoYZD6S0+e4+bWon6l1XJpyjLXN0nJCe1bo70Bkozyi/qDwsE0mD/97xQvQSub4Xre//EmSSgMnziVbI2gXVzDcLscAmnKNoymBm1Zu0J9uYDmDJR5G9beE5n1zKVjUdXZhwIDAQAB",
+  "permissions": ["storage", "activeTab", "identity", "alarms", "scripting"],
   "background": {
     "service_worker": "service-worker.js"
   },
@@ -30,6 +31,22 @@
       "all_frames": true,
       "match_about_blank": true,
       "match_origin_as_fallback": true
+    },
+    {
+      "matches": ["*://*.gradescope.com/*"],
+      "js": [
+        "gradescope/lib/browser-polyfill.js",
+        "gradescope/utils/browserDetector.js",
+        "gradescope/utils/dateParser.js",
+        "gradescope/utils/assignmentParser.js",
+        "gradescope/utils/pageDetector.js",
+        "gradescope/contentScript.js"
+      ],
+      "run_at": "document_idle"
     }
-  ]
+  ],
+  "oauth2": {
+    "client_id": "589515007396-0frm2bh6mhobpqiuec8p2dlb2gs10gla.apps.googleusercontent.com",
+    "scopes": ["https://www.googleapis.com/auth/calendar"]
+  }
 }

@@ -11,15 +11,6 @@ header { margin-bottom: 12px; }
 h1 { margin: 0 0 3px; font-size: 17px; font-weight: 600; }
 p, small { margin: 0; color: #777; font-size: 11px; }
 
-.camera-status { display: inline-flex; align-items: center; gap: 6px; color: #777; font-size: 11px; font-weight: 600; white-space: nowrap; }
-.camera-status i { width: 7px; height: 7px; border-radius: 50%; background: #b3b3b3; }
-.camera-status[data-state="active"] { color: #167a45; }
-.camera-status[data-state="active"] i { background: #27a467; }
-.camera-status[data-state="loading"] { color: #906500; }
-.camera-status[data-state="loading"] i { background: #e3a900; animation: status-pulse 1.4s ease-in-out infinite; }
-@keyframes status-pulse { 50% { opacity: .35; } }
-@media (prefers-reduced-motion: reduce) { .camera-status[data-state="loading"] i { animation: none; } }
-
 .feature {
   display: flex;
   align-items: center;
@@ -62,6 +53,27 @@ small { display: block; }
 .switch input:checked + i { background: #0d99ff; }
 .switch input:checked + i::after { transform: translateX(14px); }
 .switch input:focus-visible + i { outline: 2px solid #0d99ff; outline-offset: 2px; }
+
+.sync-button {
+  flex: none;
+  min-width: 52px;
+  padding: 5px 9px;
+  border: 0;
+  border-radius: 5px;
+  color: #fff;
+  background: #0d99ff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+}
+.sync-button:hover { background: #0b87e3; }
+.sync-button:disabled { cursor: default; opacity: .55; }
+.sync-button:focus-visible { outline: 2px solid #0d99ff; outline-offset: 2px; }
+.sync-status:empty { display: none; }
+.sync-status[data-state="success"] { color: #167a45; }
+.sync-status[data-state="error"] { color: #b3261e; }
+.sync-status[data-state="loading"] { color: #906500; }
 
 .recorder-link {
   width: 100%;

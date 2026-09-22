@@ -15,13 +15,19 @@ test("loads the override in the page's main world at document start", () => {
   assert.deepEqual(pageScript.js, ["page-camera.js"]);
 });
 
-test("manifest registers the recorder and all scripts parse", () => {
+test("manifest registers the recorder, Gradescope sync, and all scripts parse", () => {
   const manifest = JSON.parse(fs.readFileSync(path.join(root, "manifest.json")));
   assert.equal(manifest.web_accessible_resources, undefined);
   assert.equal(manifest.background.service_worker, "service-worker.js");
   assert.equal(manifest.action.default_popup, "popup.html");
   for (const file of [
-    "content.js", "page-camera.js", "popup.js", "recorder.js", "service-worker.js"
+    "content.js", "page-camera.js", "popup.js", "recorder.js", "service-worker.js",
+    "gradescope/background.js", "gradescope/contentScript.js",
+    "gradescope/auth/eventCache.js",
+    "gradescope/auth/tokenManager.js", "gradescope/auth/authenticationManager.js",
+    "gradescope/auth/calendarAPIClient.js", "gradescope/auth/autoSyncManager.js",
+    "gradescope/utils/browserDetector.js", "gradescope/utils/dateParser.js",
+    "gradescope/utils/assignmentParser.js", "gradescope/utils/pageDetector.js"
   ]) {
     const source = fs.readFileSync(path.join(root, file), "utf8");
     assert.doesNotThrow(() => new Function(source), file);
@@ -29,6 +35,7 @@ test("manifest registers the recorder and all scripts parse", () => {
   const popup = fs.readFileSync(path.join(root, "popup.html"), "utf8");
   const recorder = fs.readFileSync(path.join(root, "recorder.html"), "utf8");
   assert.match(popup, /id="cameraEnabled"/);
+  assert.match(popup, /id="gradescopeSync"/);
   assert.match(popup, /id="openRecorder"/);
   assert.match(recorder, /id="libraryGrid"/);
   assert.match(recorder, /src="recorder\.js"/);

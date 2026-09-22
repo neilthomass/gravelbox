@@ -39,3 +39,19 @@ To test locally, serve this folder with `python3 -m http.server 8000`, then
 open `http://localhost:8000/test.html` and click **Start camera**.
 
 Only use prerecorded video where doing so is lawful and permitted by the site.
+
+## Gradescope calendar sync
+
+Gradescope scraping is always enabled. Visiting a Gradescope dashboard or
+course page extracts assignments with due dates and adds them to the primary
+calendar as all-day events after Google Calendar has been authorized. Use the
+popup's **Sync** button to authorize Calendar and manually re-scrape the active
+Gradescope page. Existing events are deduplicated, and a daily background alarm
+retries the most recently extracted assignments.
+
+The registered Gradescope OAuth identity uses a separate Chrome storage
+namespace from older keyless Gravelbox builds. On first run, the bundled
+Gravelbox clip is restored into that namespace and selected automatically.
+If this folder was already loaded before the OAuth key was added, remove that
+installed copy from `chrome://extensions` and use **Load unpacked** again once;
+the Reload button does not change an existing installation's extension ID.

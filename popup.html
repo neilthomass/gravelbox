@@ -11,9 +11,6 @@
       <header>
         <div class="header-line">
           <h1>Gravelbox</h1>
-          <span id="cameraStatus" class="camera-status" data-state="loading" role="status" aria-live="polite">
-            <i aria-hidden="true"></i><span id="cameraStatusLabel">Loading</span>
-          </span>
         </div>
         <p>Control each feature separately.</p>
       </header>
@@ -48,6 +45,15 @@
           <i aria-hidden="true"></i>
         </span>
       </label>
+
+      <div class="feature">
+        <span>
+          <strong>Gradescope calendar</strong>
+          <small>Scrape assignments and sync them</small>
+          <small id="gradescopeSyncStatus" class="sync-status" role="status" aria-live="polite"></small>
+        </span>
+        <button id="gradescopeSync" class="sync-button" type="button">Sync</button>
+      </div>
 
       <button id="openRecorder" class="recorder-link" type="button">
         Record and manage videos

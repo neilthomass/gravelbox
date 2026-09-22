@@ -1,5 +1,9 @@
 "use strict";
 
+if (typeof importScripts === "function") {
+  importScripts("gradescope/background.js");
+}
+
 const DB_NAME = "gravelbox-recordings";
 const DB_VERSION = 1;
 const CHUNK_SIZE = 1024 * 1024;
@@ -44,6 +48,66 @@ function openDatabase() {
     });
   }
   return databasePromise;
+}
+
+function getLocalStorage(defaults) {
+  return new Promise((resolve) => chrome.storage.local.get(defaults, resolve));
+}
+
+function setLocalStorage(values) {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.set(values, () => {
+      if (chrome.runtime.lastError) reject(chrome.runtime.lastError);
+      else resolve();
+    });
+  });
+}
+
+async function restoreBundledRecording() {
+  const state = await getLocalStorage({
+    bundledRecordingRestored: false,
+    activeRecordingId: ""
+  });
+  if (state.bundledRecordingRestored) return;
+
+  const [database, blob] = await Promise.all([
+    openDatabase(),
+    getFastRecordingBlob()
+  ]);
+  const existing = await new Promise((resolve, reject) => {
+    const request = database
+      .transaction("recordings", "readonly")
+      .objectStore("recordings")
+      .get(FAST_RECORDING_ID);
+    request.onsuccess = () => resolve(request.result || null);
+    request.onerror = () => reject(request.error);
+  });
+
+  if (!existing) {
+    await new Promise((resolve, reject) => {
+      const transaction = database.transaction("recordings", "readwrite");
+      transaction.objectStore("recordings").put({
+        id: FAST_RECORDING_ID,
+        name: "Recovered Gravelbox recording",
+        createdAt: Date.now(),
+        width: 1920,
+        height: 1080,
+        frameRate: 30,
+        hasAudio: true,
+        mimeType: "video/mp4",
+        blob
+      });
+      transaction.oncomplete = resolve;
+      transaction.onerror = () => reject(transaction.error);
+      transaction.onabort = () => reject(transaction.error);
+    });
+  }
+
+  await setLocalStorage({
+    bundledRecordingRestored: true,
+    activeRecordingId: state.activeRecordingId || FAST_RECORDING_ID,
+    recordingRevision: Date.now()
+  });
 }
 
 async function getRecording(id) {
@@ -122,3 +186,9 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
     recordingCache.clear();
   }
 });
+
+if (chrome.storage?.local) {
+  restoreBundledRecording().catch((error) => {
+    console.error("Could not restore the bundled Gravelbox recording:", error);
+  });
+}
