@@ -55,3 +55,12 @@ Gravelbox clip is restored into that namespace and selected automatically.
 If this folder was already loaded before the OAuth key was added, remove that
 installed copy from `chrome://extensions` and use **Load unpacked** again once;
 the Reload button does not change an existing installation's extension ID.
+
+## Location spoofing
+
+Choose **New location…** from the popup's **Location** dropdown, then enter a
+name, latitude, and longitude and select **Save**. The editor stays hidden at
+other times. The named coordinate pair is remembered and selected immediately;
+saved locations remain available in the dropdown. Select **Use real location**
+to stop spoofing. The override applies to current-position, watch-position, and
+geolocation permission requests in every frame.

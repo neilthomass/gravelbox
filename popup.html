@@ -23,12 +23,28 @@
         </span>
       </label>
 
-      <label class="recording-picker">
-        <span>Loop video</span>
+      <label class="feature feature-select">
+        <span><strong>Loop video</strong><small>Recording library</small></span>
         <select id="recordingSelector">
           <option value="">Choose a recording…</option>
+          <option value="__manage__">Manage recordings…</option>
         </select>
       </label>
+
+      <label class="feature feature-select">
+        <span><strong>Location</strong><small>Override site coordinates</small></span>
+        <select id="locationSelector">
+          <option value="">Use real location</option>
+          <option value="__new__">New location…</option>
+        </select>
+      </label>
+
+      <form id="locationForm" class="coordinate-form" hidden>
+        <input id="locationName" class="location-name" type="text" maxlength="40" placeholder="Location name" aria-label="Location name" required />
+        <input id="latitude" type="number" min="-90" max="90" step="any" inputmode="decimal" placeholder="Latitude" aria-label="Latitude" required />
+        <input id="longitude" type="number" min="-180" max="180" step="any" inputmode="decimal" placeholder="Longitude" aria-label="Longitude" required />
+        <button type="submit">Save</button>
+      </form>
 
       <label class="feature">
         <span><strong>Virtual microphone</strong><small>Use the active video's audio</small></span>
@@ -54,10 +70,6 @@
         </span>
         <button id="gradescopeSync" class="sync-button" type="button">Sync</button>
       </div>
-
-      <button id="openRecorder" class="recorder-link" type="button">
-        Record and manage videos
-      </button>
 
     </main>
     <script src="popup.js"></script>

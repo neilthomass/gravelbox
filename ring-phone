@@ -1,0 +1,32 @@
+#!/bin/sh
+
+set -eu
+
+script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+config_file="$script_dir/.ring-phone.env"
+
+if [ ! -r "$config_file" ]; then
+  echo "ring-phone: missing $config_file" >&2
+  exit 1
+fi
+
+# shellcheck disable=SC1090
+. "$config_file"
+
+: "${NTFY_TOKEN:?ring-phone: NTFY_TOKEN is not configured}"
+: "${NTFY_TOPIC:?ring-phone: NTFY_TOPIC is not configured}"
+
+message=${*:-Your event happened}
+
+curl \
+  --fail \
+  --silent \
+  --show-error \
+  --request POST \
+  --header "Authorization: Bearer $NTFY_TOKEN" \
+  --header "Title: ntfy" \
+  --header "Email: yes" \
+  --data-binary "$message" \
+  "https://ntfy.sh/$NTFY_TOPIC"
+
+printf '\n'

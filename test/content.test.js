@@ -21,7 +21,8 @@ test("manifest registers the recorder, Gradescope sync, and all scripts parse", 
   assert.equal(manifest.background.service_worker, "service-worker.js");
   assert.equal(manifest.action.default_popup, "popup.html");
   for (const file of [
-    "content.js", "page-camera.js", "popup.js", "recorder.js", "service-worker.js",
+    "content.js", "page-camera.js", "location-content.js", "location-page.js",
+    "popup.js", "recorder.js", "service-worker.js",
     "gradescope/background.js", "gradescope/contentScript.js",
     "gradescope/auth/eventCache.js",
     "gradescope/auth/tokenManager.js", "gradescope/auth/authenticationManager.js",
@@ -35,8 +36,12 @@ test("manifest registers the recorder, Gradescope sync, and all scripts parse", 
   const popup = fs.readFileSync(path.join(root, "popup.html"), "utf8");
   const recorder = fs.readFileSync(path.join(root, "recorder.html"), "utf8");
   assert.match(popup, /id="cameraEnabled"/);
+  assert.match(popup, /id="locationSelector"/);
+  assert.match(popup, /id="locationName"/);
+  assert.match(popup, /id="latitude"/);
+  assert.match(popup, /id="longitude"/);
   assert.match(popup, /id="gradescopeSync"/);
-  assert.match(popup, /id="openRecorder"/);
+  assert.match(popup, /value="__manage__"/);
   assert.match(recorder, /id="libraryGrid"/);
   assert.match(recorder, /src="recorder\.js"/);
 });

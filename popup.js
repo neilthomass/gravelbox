@@ -9,6 +9,13 @@
 
   const recorderUrl = chrome.runtime.getURL("recorder.html#library");
   const selector = document.querySelector("#recordingSelector");
+  const locationSelector = document.querySelector("#locationSelector");
+  const locationForm = document.querySelector("#locationForm");
+  const locationNameInput = document.querySelector("#locationName");
+  const latitudeInput = document.querySelector("#latitude");
+  const longitudeInput = document.querySelector("#longitude");
+  const NEW_LOCATION_VALUE = "__new__";
+  const MANAGE_RECORDINGS_VALUE = "__manage__";
   let currentSettings = { ...defaults, activeRecordingId: "" };
 
   function openRecorder() {
@@ -151,7 +158,7 @@
   }
 
   async function loadRecordingChoices(activeRecordingId) {
-    while (selector.options.length > 1) selector.remove(1);
+    while (selector.options.length > 2) selector.remove(2);
     selector.options[0].textContent = "Choose a recording…";
     const database = await openDatabase();
     const recordings = await new Promise((resolve, reject) => {
@@ -176,9 +183,58 @@
     }
   }
 
+  function loadLocationChoices(locations, activeLocationId) {
+    while (locationSelector.options.length > 2) locationSelector.remove(2);
+    for (const location of locations) {
+      const option = document.createElement("option");
+      option.value = location.id;
+      option.textContent = location.name
+        || `${location.latitude}, ${location.longitude}`;
+      locationSelector.append(option);
+    }
+    locationSelector.value = activeLocationId || "";
+  }
+
+  function saveLocation(event) {
+    event.preventDefault();
+    const name = locationNameInput.value.trim();
+    locationNameInput.setCustomValidity(name ? "" : "Enter a location name.");
+    if (!event.currentTarget.reportValidity()) return;
+
+    const latitude = Number(latitudeInput.value);
+    const longitude = Number(longitudeInput.value);
+    const locations = currentSettings.savedLocations || [];
+    let location = locations.find((item) =>
+      item.latitude === latitude && item.longitude === longitude
+    );
+    if (!location) {
+      location = {
+        id: crypto.randomUUID(),
+        name,
+        latitude,
+        longitude
+      };
+      locations.push(location);
+    } else {
+      location.name = name;
+    }
+
+    currentSettings.savedLocations = locations;
+    currentSettings.activeLocationId = location.id;
+    chrome.storage.local.set({
+      savedLocations: locations,
+      activeLocationId: location.id
+    });
+    loadLocationChoices(locations, location.id);
+    event.currentTarget.reset();
+    event.currentTarget.hidden = true;
+  }
+
   chrome.storage.local.get({
     ...defaults,
     activeRecordingId: "",
+    savedLocations: [],
+    activeLocationId: "",
     gradescope_last_status: null
   }, (settings) => {
     currentSettings = settings;
@@ -205,10 +261,16 @@
       }
     }
     loadRecordingChoices(settings.activeRecordingId).catch(() => {});
+    loadLocationChoices(settings.savedLocations, settings.activeLocationId);
     showGradescopeStatus(settings.gradescope_last_status);
   });
 
   selector.addEventListener("change", () => {
+    if (selector.value === MANAGE_RECORDINGS_VALUE) {
+      selector.value = currentSettings.activeRecordingId || "";
+      openRecorder();
+      return;
+    }
     if (!selector.value) {
       currentSettings.activeRecordingId = "";
       currentSettings.cameraEnabled = false;
@@ -231,7 +293,19 @@
     document.querySelector("#cameraEnabled").checked = true;
   });
 
-  document.querySelector("#openRecorder").addEventListener("click", openRecorder);
+  locationSelector.addEventListener("change", () => {
+    if (locationSelector.value === NEW_LOCATION_VALUE) {
+      locationForm.hidden = false;
+      locationNameInput.focus();
+      return;
+    }
+    locationForm.hidden = true;
+    locationForm.reset();
+    currentSettings.activeLocationId = locationSelector.value;
+    chrome.storage.local.set({ activeLocationId: locationSelector.value });
+  });
+
+  locationForm.addEventListener("submit", saveLocation);
   document.querySelector("#gradescopeSync").addEventListener("click", manuallySyncGradescope);
   chrome.storage.onChanged.addListener((changes, areaName) => {
     if (areaName !== "local") {
@@ -242,6 +316,18 @@
     }
     if (changes.activeRecordingId) {
       currentSettings.activeRecordingId = changes.activeRecordingId.newValue || "";
+    }
+    if (changes.savedLocations) {
+      currentSettings.savedLocations = changes.savedLocations.newValue || [];
+    }
+    if (changes.activeLocationId) {
+      currentSettings.activeLocationId = changes.activeLocationId.newValue || "";
+    }
+    if (changes.savedLocations || changes.activeLocationId) {
+      loadLocationChoices(
+        currentSettings.savedLocations || [],
+        currentSettings.activeLocationId
+      );
     }
     if (changes.gradescope_last_status) {
       showGradescopeStatus(changes.gradescope_last_status.newValue);

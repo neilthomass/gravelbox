@@ -23,10 +23,11 @@ p, small { margin: 0; color: #777; font-size: 11px; }
 strong { font-size: 12px; font-weight: 600; }
 small { display: block; }
 
-.recording-picker { display: grid; gap: 5px; padding: 0 0 11px; color: #777; font-size: 10px; font-weight: 600; }
-.recording-picker select {
-  width: 100%;
-  padding: 8px 9px;
+.feature-select select {
+  flex: none;
+  width: 132px;
+  min-width: 0;
+  padding: 6px 7px;
   border: 1px solid #ccc;
   border-radius: 5px;
   color: #1e1e1e;
@@ -34,7 +35,31 @@ small { display: block; }
   font: inherit;
   font-size: 11px;
 }
-.recording-picker select:focus { border-color: #0d99ff; outline: 1px solid #0d99ff; }
+.feature-select select:focus { border-color: #0d99ff; outline: 1px solid #0d99ff; }
+.coordinate-form { display: grid; grid-template-columns: 1fr 1fr auto; gap: 5px; padding: 0 0 11px; }
+.coordinate-form[hidden] { display: none; }
+.coordinate-form .location-name { grid-column: 1 / -1; }
+.coordinate-form input {
+  min-width: 0;
+  padding: 7px 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font: inherit;
+  font-size: 11px;
+}
+.coordinate-form input:focus { border-color: #0d99ff; outline: 1px solid #0d99ff; }
+.coordinate-form button {
+  padding: 7px 9px;
+  border: 0;
+  border-radius: 5px;
+  color: #fff;
+  background: #0d99ff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+}
+.coordinate-form button:hover { background: #0b87e3; }
 
 .switch { position: relative; flex: none; width: 32px; height: 18px; }
 .switch input { position: absolute; opacity: 0; }
@@ -74,19 +99,3 @@ small { display: block; }
 .sync-status[data-state="success"] { color: #167a45; }
 .sync-status[data-state="error"] { color: #b3261e; }
 .sync-status[data-state="loading"] { color: #906500; }
-
-.recorder-link {
-  width: 100%;
-  margin-top: 8px;
-  padding: 9px 11px;
-  border: 0;
-  border-radius: 6px;
-  color: #fff;
-  background: #0d99ff;
-  cursor: pointer;
-  font: inherit;
-  font-size: 12px;
-  font-weight: 500;
-}
-.recorder-link:hover { background: #0b87e3; }
-.recorder-link:focus-visible { outline: 2px solid #0d99ff; outline-offset: 2px; }
