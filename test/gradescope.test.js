@@ -29,12 +29,8 @@ test("Gradescope support is additive and references packaged files", () => {
     path.join(root, "gradescope/contentScript.js"),
     "utf8"
   );
-  assert.match(popup, /id="gradescopeSync"/);
-  assert.match(popup, /id="gradescopeSyncStatus"/);
-  assert.match(
-    fs.readFileSync(path.join(root, "popup.js"), "utf8"),
-    /chrome\.scripting\.executeScript/
-  );
+  assert.doesNotMatch(popup, /id="gradescopeSync"/);
+  assert.doesNotMatch(popup, /id="gradescopeSyncStatus"/);
   assert.doesNotMatch(popup, /id="gradescopeEnabled"/);
   assert.doesNotMatch(contentScript, /gradescopeEnabled/);
 

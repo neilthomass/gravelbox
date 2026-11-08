@@ -12,24 +12,7 @@
         <div class="header-line">
           <h1>Gravelbox</h1>
         </div>
-        <p>Control each feature separately.</p>
       </header>
-
-      <label class="feature">
-        <span><strong>Loop camera</strong><small>Use the active library video</small></span>
-        <span class="switch">
-          <input id="cameraEnabled" type="checkbox" />
-          <i aria-hidden="true"></i>
-        </span>
-      </label>
-
-      <label class="feature feature-select">
-        <span><strong>Loop video</strong><small>Recording library</small></span>
-        <select id="recordingSelector">
-          <option value="">Choose a recording…</option>
-          <option value="__manage__">Manage recordings…</option>
-        </select>
-      </label>
 
       <label class="feature feature-select">
         <span><strong>Location</strong><small>Override site coordinates</small></span>
@@ -47,14 +30,6 @@
       </form>
 
       <label class="feature">
-        <span><strong>Virtual microphone</strong><small>Use the active video's audio</small></span>
-        <span class="switch">
-          <input id="audioMuted" type="checkbox" checked />
-          <i aria-hidden="true"></i>
-        </span>
-      </label>
-
-      <label class="feature">
         <span><strong>Block function keys</strong><small>Hide F1–F24 from websites</small></span>
         <span class="switch">
           <input id="functionKeysBlocked" type="checkbox" checked />
@@ -62,16 +37,57 @@
         </span>
       </label>
 
-      <div class="feature">
-        <span>
-          <strong>Gradescope calendar</strong>
-          <small>Scrape assignments and sync them</small>
-          <small id="gradescopeSyncStatus" class="sync-status" role="status" aria-live="polite"></small>
+      <details class="tab-controls">
+        <summary>Tab blocking</summary>
+      <label class="feature">
+        <span><strong>Block new tabs</strong><small>Close new tabs until switched off</small></span>
+        <span class="switch">
+          <input id="newTabsBlocked" type="checkbox" />
+          <i aria-hidden="true"></i>
         </span>
-        <button id="gradescopeSync" class="sync-button" type="button">Sync</button>
-      </div>
+      </label>
 
+      <section class="blocked-sites" aria-labelledby="blockedSitesHeading">
+        <div class="section-heading"><strong id="blockedSitesHeading">Blocked sites <span id="blockedSitesCount" class="count"></span></strong><small>5 min to unblock</small></div>
+        <form id="blockedSiteForm">
+          <input id="blockedSiteInput" type="text" placeholder="Website or URL" aria-label="Website to block" required />
+          <button class="sync-button" type="submit">Add</button>
+        </form>
+        <small id="blockedSitesStatus" role="status" aria-live="polite"></small>
+        <ul id="blockedSitesList"></ul>
+      </section>
+
+      </details>
+      <details class="tab-controls">
+        <summary>Video</summary>
+      <label class="feature">
+        <span><strong>Loop camera</strong><small>Use the active library video</small></span>
+        <span class="switch">
+          <input id="cameraEnabled" type="checkbox" />
+          <i aria-hidden="true"></i>
+        </span>
+      </label>
+
+      <label class="feature feature-select">
+        <span><strong>Loop video</strong><small>Recording library</small></span>
+        <select id="recordingSelector">
+          <option value="">Choose a recording…</option>
+          <option value="__manage__">Manage recordings…</option>
+        </select>
+      </label>
+
+      <label class="feature">
+        <span><strong>Virtual microphone</strong><small>Use the active video's audio</small></span>
+        <span class="switch">
+          <input id="audioMuted" type="checkbox" checked />
+          <i aria-hidden="true"></i>
+        </span>
+      </label>
+
+      </details>
     </main>
     <script src="popup.js"></script>
+    <script src="blocklist.js"></script>
+    <script src="blocklist-popup.js"></script>
   </body>
 </html>

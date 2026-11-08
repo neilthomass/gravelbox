@@ -8,13 +8,7 @@
     const requestId = event.detail?.requestId;
     if (!requestId) return;
 
-    chrome.storage.local.get({
-      savedLocations: [],
-      activeLocationId: ""
-    }, (settings) => {
-      const location = settings.savedLocations.find(
-        (item) => item.id === settings.activeLocationId
-      );
+    function respond(location) {
       window.dispatchEvent(new CustomEvent(RESPONSE_EVENT, {
         detail: {
           requestId,
@@ -26,6 +20,25 @@
             : null
         }
       }));
-    });
+    }
+
+    try {
+      chrome.storage.local.get({
+        savedLocations: [],
+        activeLocationId: ""
+      }, (settings) => {
+        if (chrome.runtime?.lastError || !settings) {
+          respond(null);
+          return;
+        }
+        const locations = Array.isArray(settings.savedLocations)
+          ? settings.savedLocations : [];
+        respond(locations.find((item) => item?.id === settings.activeLocationId));
+      });
+    } catch (_error) {
+      // Reloading the extension invalidates content scripts in existing tabs.
+      // Reply so the page bridge can fall back to native geolocation.
+      respond(null);
+    }
   });
 })();

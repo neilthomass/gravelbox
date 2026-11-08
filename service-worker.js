@@ -2,6 +2,7 @@
 
 if (typeof importScripts === "function") {
   importScripts("gradescope/background.js");
+  importScripts("blocklist.js");
 }
 
 const DB_NAME = "gravelbox-recordings";
@@ -11,6 +12,48 @@ const FAST_RECORDING_ID = "ab328293-858c-4c69-b561-81ac6f8c9028";
 const recordingCache = new Map();
 let databasePromise;
 let fastRecordingBlobPromise;
+
+function closeBlockedTab(tab, settings) {
+  if (!GravelboxBlocklist.matches(tab.pendingUrl, settings.blockedSites)
+      && !GravelboxBlocklist.matches(tab.url, settings.blockedSites)) return;
+  chrome.tabs.remove(tab.id, () => { void chrome.runtime.lastError; });
+}
+
+function checkBlockedTab(tab) {
+  chrome.storage.local.get({ blockedSites: GravelboxBlocklist.defaults }, (settings) => {
+    if (chrome.runtime.lastError) return;
+    closeBlockedTab(tab, settings);
+  });
+}
+
+if (chrome.tabs?.onUpdated) {
+  chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    if (!changeInfo.url && !changeInfo.status) return;
+    checkBlockedTab({ ...tab, id: tabId, url: changeInfo.url || tab?.url });
+  });
+}
+
+if (chrome.tabs?.onCreated) {
+  chrome.tabs.onCreated.addListener((tab) => {
+    chrome.storage.local.get({ newTabsBlocked: false, blockedSites: GravelboxBlocklist.defaults }, (settings) => {
+      if (chrome.runtime.lastError) return;
+      if (settings.newTabsBlocked === true) {
+        chrome.tabs.remove(tab.id, () => { void chrome.runtime.lastError; });
+      } else {
+        closeBlockedTab(tab, settings);
+      }
+    });
+  });
+}
+
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area !== "local" || !changes.blockedSites || !chrome.tabs?.query) return;
+  chrome.tabs.query({}, (tabs) => {
+    if (chrome.runtime.lastError) return;
+    // Read the latest saved list, including removal deadlines, for each tab.
+    for (const tab of tabs) checkBlockedTab(tab);
+  });
+});
 
 function getFastRecordingBlob() {
   if (!fastRecordingBlobPromise) {

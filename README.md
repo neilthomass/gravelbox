@@ -3,9 +3,26 @@
 A Chrome extension that returns the selected private-library recording on a
 continuous loop when a website requests camera access. It also prevents
 websites from receiving `F1` through `F24` key events while leaving Chrome's
-own function-key behavior available.
+own function-key behavior available. Tabs navigating to `x.com`, `linkedin.com`,
+`youtube.com`, `discord.com`, `discord.gg`,
+`discordapp.com`, `gmail.com`, `mail.google.com`, `github.com`, or any of their
+subdomains are closed automatically.
+
+Expand **Tab blocking** at the bottom of the popup to manage **Blocked sites**
+and the **Block new tabs** toggle. The input is prefilled
+with the current site; edit it if needed and click **Add**. Adding a site closes
+matching open tabs and blocks future visits, including subdomains. **Remove** starts a separate
+five-minute countdown for that site, with a **Cancel** option. The site remains
+blocked until its deadline, then unblocks automatically even with the popup
+closed or the browser restarted. Changes are saved locally; an empty list
+disables site blocking. **Block new tabs** remains a separate setting.
 
 ## Install
+
+Turn on **Block new tabs** in the toolbar popup to automatically close newly
+created tabs, including tabs opened with the + button, keyboard shortcuts, or
+links. Existing tabs stay open. The setting persists until switched off; new
+tabs may briefly appear before closing. Switch it off to open new tabs again.
 
 1. Open `chrome://extensions` and turn on **Developer mode**.
 2. Choose **Load unpacked** and select this folder.
@@ -44,9 +61,9 @@ Only use prerecorded video where doing so is lawful and permitted by the site.
 
 Gradescope scraping is always enabled. Visiting a Gradescope dashboard or
 course page extracts assignments with due dates and adds them to the primary
-calendar as all-day events after Google Calendar has been authorized. Use the
-popup's **Sync** button to authorize Calendar and manually re-scrape the active
-Gradescope page. Existing events are deduplicated, and a daily background alarm
+calendar as all-day events after Google Calendar has been authorized.
+The popup has no Gradescope controls; existing authorization and background
+sync remain in place. Existing events are deduplicated, and a daily background alarm
 retries the most recently extracted assignments.
 
 The registered Gradescope OAuth identity uses a separate Chrome storage

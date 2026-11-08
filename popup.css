@@ -99,3 +99,22 @@ small { display: block; }
 .sync-status[data-state="success"] { color: #167a45; }
 .sync-status[data-state="error"] { color: #b3261e; }
 .sync-status[data-state="loading"] { color: #906500; }
+
+.blocked-sites { border-top: 1px solid #e5e5e5; padding: 10px 0; }
+.section-heading { display: flex; justify-content: space-between; align-items: center; }
+.count { color: #647080; background: #eef1f5; border-radius: 4px; padding: 1px 5px; margin-left: 4px; font-size: 10px; }
+#blockedSiteForm { display: flex; gap: 6px; margin: 8px 0; }
+#blockedSiteInput { min-width: 0; flex: 1; height: 30px; padding: 6px 8px; border: 1px solid #d6dbe2; border-radius: 6px; font: inherit; font-size: 12px; }
+#blockedSitesStatus:empty { display: none; }
+#blockedSitesStatus { color: #b3261e; margin: 5px 0; }
+#blockedSitesList { list-style: none; padding: 0; margin: 0; max-height: 216px; overflow-y: auto; }
+#blockedSitesList li { display: flex; align-items: center; gap: 8px; min-height: 32px; padding: 2px 4px; border-radius: 4px; font-size: 12px; }
+#blockedSitesList li:nth-child(odd) { background: #f6f7f9; }
+#blockedSitesList li > span { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; min-width: 0; }
+#blockedSitesList [data-deadline] { color: #986014; font-variant-numeric: tabular-nums; }
+.remove-site { flex: none; background: transparent; color: #5d6572; border: 0; border-radius: 4px; min-height: 28px; padding: 4px 6px; font: inherit; font-size: 11px; cursor: pointer; }
+.remove-site:hover { background: #e7ebf0; color: #202630; }
+.tab-controls { border-top: 1px solid #e5e5e5; }
+.tab-controls summary { cursor: pointer; padding: 11px 0; color: #1e1e1e; font-size: 12px; font-weight: 600; }
+.tab-controls[open] summary { padding-bottom: 10px; }
+button:focus-visible, input:focus-visible, summary:focus-visible { outline: 2px solid #0d99ff; outline-offset: 2px; }

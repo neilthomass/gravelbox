@@ -6,6 +6,41 @@ const vm = require("node:vm");
 
 const root = path.join(__dirname, "..");
 
+test("location bridge replies with native fallback when extension storage is unavailable", () => {
+  for (const failure of ["invalidated", "callback-error", "missing-settings"]) {
+    let request;
+    const responses = [];
+    const chrome = {
+      runtime: {},
+      storage: { local: {
+        get(_defaults, callback) {
+          if (failure === "invalidated") throw new Error("Extension context invalidated.");
+          if (failure === "callback-error") chrome.runtime.lastError = { message: "Storage unavailable" };
+          callback(undefined);
+        }
+      } }
+    };
+    vm.runInNewContext(
+      fs.readFileSync(path.join(root, "location-content.js"), "utf8"),
+      {
+        chrome,
+        window: {
+          addEventListener(_type, listener) { request = listener; },
+          dispatchEvent(event) { responses.push(event); }
+        },
+        CustomEvent: class {
+          constructor(type, options) { this.type = type; this.detail = options.detail; }
+        }
+      }
+    );
+    assert.doesNotThrow(() => request({ detail: { requestId: failure } }));
+    assert.equal(responses.length, 1);
+    assert.equal(responses[0].type, "__gravelbox_location_response__");
+    assert.equal(responses[0].detail.requestId, failure);
+    assert.equal(responses[0].detail.location, null);
+  }
+});
+
 test("loads the location bridge in both page and isolated worlds", () => {
   const manifest = JSON.parse(fs.readFileSync(path.join(root, "manifest.json")));
   const page = manifest.content_scripts.find((entry) =>
