@@ -87,7 +87,7 @@ class PageDetector {
             observer.observe(document.body, { childList: true, subtree: true });
         }
 
-        console.log(`👀 Created ${observersCreated || 1} DOM observer(s)`);
+        console.log(`Created ${observersCreated || 1} DOM observer(s)`);
     }
 }
 

@@ -16,7 +16,7 @@ class EventCache {
         this.CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
         this.refreshPromise = null;
 
-        console.log('💾 Event cache initialized');
+        console.log('Event cache initialized');
     }
 
     async getExistingEvent(assignmentId) {
@@ -35,7 +35,7 @@ class EventCache {
 
         if (this.refreshPromise) return await this.refreshPromise;
 
-        console.log('🔄 Cache expired, refreshing...');
+        console.log('Cache expired, refreshing...');
         this.refreshPromise = this.refreshCache();
 
         try {
@@ -73,10 +73,10 @@ class EventCache {
             });
 
             this.lastFullRefresh = Date.now();
-            console.log(`✅ Cache refresh complete: ${cachedCount} events cached`);
+            console.log(`Cache refresh complete: ${cachedCount} events cached`);
 
         } catch (error) {
-            console.error('❌ Cache refresh failed:', error);
+            console.error('Cache refresh failed:', error);
             throw error;
         }
     }
@@ -97,11 +97,11 @@ class EventCache {
                 Boolean(event.extendedProperties?.private?.gradescope_assignment_id)
             );
 
-            console.log(`📡 Found ${gradescopeEvents.length} Gradescope events out of ${allEvents.length} total`);
+            console.log(`Found ${gradescopeEvents.length} Gradescope events out of ${allEvents.length} total`);
             return gradescopeEvents;
 
         } catch (error) {
-            console.error('❌ API call failed:', error);
+            console.error('API call failed:', error);
             throw error;
         }
     }
@@ -121,7 +121,7 @@ class EventCache {
                 htmlLink: eventData.htmlLink
             }
         });
-        console.log(`💾 Added event to cache: ${assignmentId} → ${eventData.id}`);
+        console.log(`Added event to cache: ${assignmentId} → ${eventData.id}`);
     }
 
     async forceRefresh() {

@@ -14,6 +14,14 @@
         </div>
       </header>
 
+      <section id="onboarding" class="onboarding" hidden aria-labelledby="onboardingTitle">
+        <strong id="onboardingTitle">Choose what Gravelbox changes</strong>
+        <p>New installs start with every feature off and no blocked sites. Use the controls below to opt in. Your choices save automatically.</p>
+        <p>Site blocking closes matching tabs. Removing a blocked site takes five minutes. New-tab blocking keeps one tab per window and allows Gravelbox pages.</p>
+        <button id="dismissOnboarding" class="sync-button" type="button">Got it</button>
+      </section>
+      <small id="popupStatus" class="sync-status" data-state="error" role="status" aria-live="polite"></small>
+
       <label class="feature feature-select">
         <span><strong>Location</strong><small>Override site coordinates</small></span>
         <select id="locationSelector">
@@ -32,7 +40,7 @@
       <label class="feature">
         <span><strong>Block function keys</strong><small>Hide F1–F24 from websites</small></span>
         <span class="switch">
-          <input id="functionKeysBlocked" type="checkbox" checked />
+          <input id="functionKeysBlocked" type="checkbox" />
           <i aria-hidden="true"></i>
         </span>
       </label>
@@ -40,7 +48,7 @@
       <details class="tab-controls">
         <summary>Tab blocking</summary>
       <label class="feature">
-        <span><strong>Block new tabs</strong><small>Close new tabs until switched off</small></span>
+        <span><strong>Block new tabs</strong><small>Keep the first tab in each window</small></span>
         <span class="switch">
           <input id="newTabsBlocked" type="checkbox" />
           <i aria-hidden="true"></i>
@@ -79,15 +87,25 @@
       <label class="feature">
         <span><strong>Virtual microphone</strong><small>Use the active video's audio</small></span>
         <span class="switch">
-          <input id="audioMuted" type="checkbox" checked />
+          <input id="audioMuted" type="checkbox" />
           <i aria-hidden="true"></i>
         </span>
       </label>
 
       </details>
+      <details class="tab-controls">
+        <summary>Gradescope calendar</summary>
+        <p>Connect to collect assignments from Gradescope pages you visit and add due dates to your primary Google Calendar. Sync also runs daily.</p>
+        <div class="calendar-actions">
+          <button id="calendarConnect" class="sync-button" type="button">Connect Google Calendar</button>
+          <button id="calendarDisconnect" class="sync-button" type="button" hidden>Disconnect</button>
+        </div>
+        <small id="calendarStatus" class="sync-status" role="status" aria-live="polite"></small>
+      </details>
     </main>
     <script src="popup.js"></script>
     <script src="blocklist.js"></script>
     <script src="blocklist-popup.js"></script>
+    <script src="calendar-popup.js"></script>
   </body>
 </html>

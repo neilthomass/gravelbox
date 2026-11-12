@@ -8,10 +8,14 @@ if (typeof importScripts === "function") {
 const DB_NAME = "gravelbox-recordings";
 const DB_VERSION = 1;
 const CHUNK_SIZE = 1024 * 1024;
-const FAST_RECORDING_ID = "ab328293-858c-4c69-b561-81ac6f8c9028";
 const recordingCache = new Map();
 let databasePromise;
-let fastRecordingBlobPromise;
+let tabCreationQueue = Promise.resolve();
+
+function isExtensionPage(tab) {
+  const root = chrome.runtime.getURL("");
+  return [tab.pendingUrl, tab.url].some(url => typeof url === "string" && url.startsWith(root));
+}
 
 function closeBlockedTab(tab, settings) {
   if (!GravelboxBlocklist.matches(tab.pendingUrl, settings.blockedSites)
@@ -35,14 +39,31 @@ if (chrome.tabs?.onUpdated) {
 
 if (chrome.tabs?.onCreated) {
   chrome.tabs.onCreated.addListener((tab) => {
-    chrome.storage.local.get({ newTabsBlocked: false, blockedSites: GravelboxBlocklist.defaults }, (settings) => {
-      if (chrome.runtime.lastError) return;
-      if (settings.newTabsBlocked === true) {
-        chrome.tabs.remove(tab.id, () => { void chrome.runtime.lastError; });
-      } else {
-        closeBlockedTab(tab, settings);
-      }
-    });
+    // Serialize queries and removals so simultaneous tabs cannot each close
+    // the last remaining tab during startup or restoration.
+    tabCreationQueue = tabCreationQueue.then(() => new Promise((resolve) => {
+      if (isExtensionPage(tab)) return resolve();
+      chrome.storage.local.get({ newTabsBlocked: false, blockedSites: GravelboxBlocklist.defaults }, (settings) => {
+        if (chrome.runtime.lastError) return resolve();
+        if (settings.newTabsBlocked !== true) {
+          closeBlockedTab(tab, settings);
+          return resolve();
+        }
+        chrome.tabs.query({ windowId: tab.windowId }, (tabs) => {
+          if (chrome.runtime.lastError) return resolve();
+          const current = tabs.find(item => item.id === tab.id);
+          if (!current || isExtensionPage(current)) return resolve();
+          if (tabs.length <= 1) {
+            closeBlockedTab(current, settings);
+            return resolve();
+          }
+          chrome.tabs.remove(tab.id, () => {
+            void chrome.runtime.lastError;
+            resolve();
+          });
+        });
+      });
+    })).catch(error => console.error("Could not check new tab:", error));
   });
 }
 
@@ -54,23 +75,6 @@ chrome.storage.onChanged.addListener((changes, area) => {
     for (const tab of tabs) checkBlockedTab(tab);
   });
 });
-
-function getFastRecordingBlob() {
-  if (!fastRecordingBlobPromise) {
-    fastRecordingBlobPromise = fetch(chrome.runtime.getURL("media.mp4"))
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("The optimized recording copy is unavailable.");
-        }
-        return response.blob();
-      })
-      .catch((error) => {
-        fastRecordingBlobPromise = null;
-        throw error;
-      });
-  }
-  return fastRecordingBlobPromise;
-}
 
 function openDatabase() {
   if (!databasePromise) {
@@ -93,66 +97,6 @@ function openDatabase() {
   return databasePromise;
 }
 
-function getLocalStorage(defaults) {
-  return new Promise((resolve) => chrome.storage.local.get(defaults, resolve));
-}
-
-function setLocalStorage(values) {
-  return new Promise((resolve, reject) => {
-    chrome.storage.local.set(values, () => {
-      if (chrome.runtime.lastError) reject(chrome.runtime.lastError);
-      else resolve();
-    });
-  });
-}
-
-async function restoreBundledRecording() {
-  const state = await getLocalStorage({
-    bundledRecordingRestored: false,
-    activeRecordingId: ""
-  });
-  if (state.bundledRecordingRestored) return;
-
-  const [database, blob] = await Promise.all([
-    openDatabase(),
-    getFastRecordingBlob()
-  ]);
-  const existing = await new Promise((resolve, reject) => {
-    const request = database
-      .transaction("recordings", "readonly")
-      .objectStore("recordings")
-      .get(FAST_RECORDING_ID);
-    request.onsuccess = () => resolve(request.result || null);
-    request.onerror = () => reject(request.error);
-  });
-
-  if (!existing) {
-    await new Promise((resolve, reject) => {
-      const transaction = database.transaction("recordings", "readwrite");
-      transaction.objectStore("recordings").put({
-        id: FAST_RECORDING_ID,
-        name: "Recovered Gravelbox recording",
-        createdAt: Date.now(),
-        width: 1920,
-        height: 1080,
-        frameRate: 30,
-        hasAudio: true,
-        mimeType: "video/mp4",
-        blob
-      });
-      transaction.oncomplete = resolve;
-      transaction.onerror = () => reject(transaction.error);
-      transaction.onabort = () => reject(transaction.error);
-    });
-  }
-
-  await setLocalStorage({
-    bundledRecordingRestored: true,
-    activeRecordingId: state.activeRecordingId || FAST_RECORDING_ID,
-    recordingRevision: Date.now()
-  });
-}
-
 async function getRecording(id) {
   if (recordingCache.has(id)) {
     return recordingCache.get(id);
@@ -167,15 +111,7 @@ async function getRecording(id) {
     request.onerror = () => reject(request.error);
   });
   if (recording) {
-    const playable = id === FAST_RECORDING_ID
-      ? {
-          ...recording,
-          blob: await getFastRecordingBlob(),
-          mimeType: "video/mp4"
-        }
-      : recording;
-    recordingCache.set(id, playable);
-    return playable;
+    recordingCache.set(id, recording);
   }
   return recording;
 }
@@ -229,9 +165,3 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
     recordingCache.clear();
   }
 });
-
-if (chrome.storage?.local) {
-  restoreBundledRecording().catch((error) => {
-    console.error("Could not restore the bundled Gravelbox recording:", error);
-  });
-}

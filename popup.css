@@ -118,3 +118,8 @@ small { display: block; }
 .tab-controls summary { cursor: pointer; padding: 11px 0; color: #1e1e1e; font-size: 12px; font-weight: 600; }
 .tab-controls[open] summary { padding-bottom: 10px; }
 button:focus-visible, input:focus-visible, summary:focus-visible { outline: 2px solid #0d99ff; outline-offset: 2px; }
+.onboarding { padding: 12px; margin-bottom: 12px; border: 1px solid #cde6fa; border-radius: 7px; background: #f2f8fd; }
+.onboarding p { margin: 7px 0; color: #4b5563; line-height: 1.5; }
+.calendar-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+.tab-controls > p { line-height: 1.5; }
+#popupStatus:not(:empty) { margin: 8px 0; }

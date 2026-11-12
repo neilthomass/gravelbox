@@ -10,7 +10,7 @@ class AssignmentParser {
      * Extract course cards from dashboard page
      */
     static extractCoursesFromDashboard() {
-        console.log('🏠 Extracting courses from dashboard...');
+        console.log('Extracting courses from dashboard...');
 
         const currentSemester = DateParser.getCurrentSemester();
         const courses = [];
@@ -21,14 +21,14 @@ class AssignmentParser {
             !card.textContent.includes('Add a course')
         );
 
-        console.log(`📚 Processing ${actualCourseCards.length} course cards`);
+        console.log(`Processing ${actualCourseCards.length} course cards`);
 
         actualCourseCards.forEach((card, index) => {
             const term = card.closest('.courseList--coursesForTerm')?.previousElementSibling?.textContent?.trim();
             const courseData = this.extractCourseFromCard(card, term || currentSemester);
             if (courseData) {
                 courses.push(courseData);
-                console.log(`✅ Course ${index + 1}: ${courseData.shortName}`);
+                console.log(`Course ${index + 1}: ${courseData.shortName}`);
             }
         });
 
@@ -63,7 +63,7 @@ class AssignmentParser {
             };
 
         } catch (error) {
-            console.log('⚠️ Error parsing course card:', error);
+            console.log('Error parsing course card:', error);
             return null;
         }
     }
@@ -72,7 +72,7 @@ class AssignmentParser {
      * Extract ALL assignments from a course for comprehensive grade data
      */
     static async extractAllAssignmentsForGrades(course) {
-        console.log(`📡 Extracting ALL assignments from ${course.shortName} for grade calculation...`);
+        console.log(`Extracting ALL assignments from ${course.shortName} for grade calculation...`);
 
         try {
             let doc;
@@ -100,7 +100,7 @@ class AssignmentParser {
             return this.parseAllAssignmentsFromDocument(doc, course);
 
         } catch (error) {
-            console.log(`❌ Error extracting from ${course.shortName}:`, error.message);
+            console.log(`Error extracting from ${course.shortName}:`, error.message);
             return [];
         }
     }
@@ -109,45 +109,45 @@ class AssignmentParser {
      * Parse assignment table from course page document
      */
     static parseAllAssignmentsFromDocument(doc, course) {
-        console.log(`📋 Parsing ALL assignments with categorization from ${course.shortName}...`);
+        console.log(`Parsing ALL assignments with categorization from ${course.shortName}...`);
 
         const assignments = [];
 
         // Check for multiple tables (Gradescope might have separate tables for different categories)
         const allTables = doc.querySelectorAll('table');
-        console.log(`🔍 Found ${allTables.length} table(s) on page for ${course.shortName}`);
+        console.log(`Found ${allTables.length} table(s) on page for ${course.shortName}`);
 
         if (allTables.length === 0) {
-            console.log(`❌ No assignment tables found for ${course.shortName}`);
+            console.log(`No assignment tables found for ${course.shortName}`);
             return assignments;
         }
 
         // Process ALL tables (in case assignments are split across multiple tables)
         allTables.forEach((table, tableIndex) => {
             const rows = table.querySelectorAll('tbody tr');
-            console.log(`📋 Table ${tableIndex + 1}: ${rows.length} rows`);
+            console.log(`Table ${tableIndex + 1}: ${rows.length} rows`);
 
             rows.forEach((row, index) => {
                 try {
                     // DEBUG: Log what we're trying to parse
                     const firstCell = row.querySelector('th, td');
                     const rowPreview = firstCell?.textContent?.trim() || '(empty)';
-                    console.log(`🔄 Table ${tableIndex + 1}, Row ${index + 1}: "${rowPreview}"`);
+                    console.log(`Table ${tableIndex + 1}, Row ${index + 1}: "${rowPreview}"`);
 
                     const assignment = this.parseAssignmentFromRow(row, course);
                     if (assignment) {
                         assignments.push(assignment);
-                        console.log(`  ✅ Parsed: "${assignment.title}" (${assignment.submissionStatus})`);
+                        console.log(`  Parsed: "${assignment.title}" (${assignment.submissionStatus})`);
                     } else {
-                        console.log(`  ❌ Skipped`);
+                        console.log(`  Skipped`);
                     }
                 } catch (error) {
-                    console.log(`  ⚠️ Error:`, error.message);
+                    console.log(`  Error:`, error.message);
                 }
             });
         });
 
-        console.log(`✅ Extracted ${assignments.length} assignments from ${course.shortName}`);
+        console.log(`Extracted ${assignments.length} assignments from ${course.shortName}`);
         return assignments;
     }
 
@@ -182,14 +182,14 @@ class AssignmentParser {
         if (!titleElement) {
             const firstCell = row.querySelector('th, td');
             if (firstCell && firstCell.textContent?.trim()) {
-                console.log(`⚠️ Using text-only extraction for row: ${firstCell.textContent.trim()}`);
+                console.log(`Using text-only extraction for row: ${firstCell.textContent.trim()}`);
                 // Create a pseudo-element with the text content
                 titleElement = { textContent: firstCell.textContent.trim() };
             }
         }
 
         if (!titleElement) {
-            console.log(`❌ Could not find title element in row:`, row.innerHTML.substring(0, 100));
+            console.log(`Could not find title element in row:`, row.innerHTML.substring(0, 100));
             return null;
         }
 
@@ -213,11 +213,11 @@ class AssignmentParser {
         if (!assignmentId && title) {
             // Create a simple hash from title for consistent ID
             assignmentId = 'pseudo_' + title.replace(/\s+/g, '_').toLowerCase();
-            console.log(`⚠️ Generated pseudo-ID for "${title}": ${assignmentId}`);
+            console.log(`Generated pseudo-ID for "${title}": ${assignmentId}`);
         }
 
         if (!title || !assignmentId) {
-            console.log(`❌ Missing title or ID - Title: "${title}", ID: "${assignmentId}"`);
+            console.log(`Missing title or ID - Title: "${title}", ID: "${assignmentId}"`);
             return null;
         }
 
@@ -278,7 +278,7 @@ class AssignmentParser {
      * Extract from individual course page
      */
     static extractFromCoursePage() {
-        console.log('📄 Extracting from individual course page with categorization...');
+        console.log('Extracting from individual course page with categorization...');
 
         const courseId = window.location.pathname.match(/\/courses\/(\d+)/)?.[1];
         const courseNameEl = document.querySelector('h1, .course-title, .course-name');
@@ -302,16 +302,16 @@ class AssignmentParser {
      * Fast comprehensive extraction from dashboard page
      */
     static async fastComprehensiveExtraction() {
-        console.log('🚀 Starting fast comprehensive extraction...');
+        console.log('Starting fast comprehensive extraction...');
 
         const courses = this.extractCoursesFromDashboard();
 
         if (courses.length === 0) {
-            console.log('❌ No courses found in current semester');
+            console.log('No courses found in current semester');
             return { allAssignments: [], calendarAssignments: [] };
         }
 
-        console.log(`📚 Found ${courses.length} courses, extracting ALL assignments...`);
+        console.log(`Found ${courses.length} courses, extracting ALL assignments...`);
 
         // Extract ALL assignments from ALL courses in parallel
         const allAssignmentsPromises = courses.map(course => this.extractAllAssignmentsForGrades(course));
@@ -319,11 +319,11 @@ class AssignmentParser {
 
         // Flatten all assignments
         const allAssignments = courseAssignments.flat();
-        console.log(`📊 Total assignments extracted: ${allAssignments.length}`);
+        console.log(`Total assignments extracted: ${allAssignments.length}`);
 
         const calendarAssignments = allAssignments.filter(assignment => assignment.dueDate);
 
-        console.log(`🎯 Results: ${allAssignments.length} total assignments, ${calendarAssignments.length} for calendar`);
+        console.log(`Results: ${allAssignments.length} total assignments, ${calendarAssignments.length} for calendar`);
 
         return { allAssignments, calendarAssignments };
     }

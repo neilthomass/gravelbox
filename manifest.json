@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Gravelbox",
-  "version": "1.4.2",
-  "description": "Supplies a looping video in place of your physical camera.",
+  "version": "1.4.3",
+  "description": "Block sites, extra tabs, and function keys; loop recorded video and audio; override location; sync Gradescope to Google Calendar.",
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzTk1C+DaqrLmFQ5iXMeXqqy4SMYjG/WFEuPsOX6NgzCB5izjT/elNULmdx6Zi6P8Xby4saseNLrv/cn9SJKkSd4K0vWIjJxvrs9k3QHXxieUUt0UvZy9uS9JNVNr0pqQNcVn84Mw6cF9C/zyPZEbKk/+q9LAy5v2wrcS7oJZpHKiK4GZkqqgyF5dXDJH8S4lRrQXvjK8E72WcFldr7QoYZD6S0+e4+bWon6l1XJpyjLXN0nJCe1bo70Bkozyi/qDwsE0mD/97xQvQSub4Xre//EmSSgMnziVbI2gXVzDcLscAmnKNoymBm1Zu0J9uYDmDJR5G9beE5n1zKVjUdXZhwIDAQAB",
   "permissions": ["storage", "activeTab", "identity", "alarms", "scripting"],
   "background": {

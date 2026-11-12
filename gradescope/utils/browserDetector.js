@@ -145,7 +145,7 @@ class BrowserDetector {
         const config = this.getConfig();
         console.log('');
         console.log('╔════════════════════════════════════════════════════════════════════════╗');
-        console.log('║  🔍 BROWSER DETECTION                                                  ║');
+        console.log('║  BROWSER DETECTION                                                  ║');
         console.log('╚════════════════════════════════════════════════════════════════════════╝');
         console.log('');
         console.log('  Browser:', config.browser);

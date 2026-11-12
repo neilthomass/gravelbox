@@ -1,1 +1,7 @@
 .ring-phone.env
+*.mp4
+*.webm
+*.env
+client_secret*.json
+credentials*.json
+dist/

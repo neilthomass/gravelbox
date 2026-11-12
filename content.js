@@ -6,11 +6,11 @@
   const MEDIA_EVENT = "__gravelbox_media__";
   let settings = {
     cameraEnabled: false,
-    audioMuted: true,
+    audioMuted: false,
     useVideoAudio: true,
     recordingRevision: 0,
     activeRecordingId: "",
-    functionKeysBlocked: true
+    functionKeysBlocked: false
   };
   let videoLoadGeneration = 0;
   let mediaReady = false;
@@ -63,7 +63,7 @@
         useVideoAudio: true,
         mediaGeneration: videoLoadGeneration,
         videoLoading: Boolean(
-          settings.cameraEnabled && settings.activeRecordingId && !mediaReady
+          (settings.cameraEnabled || settings.audioMuted) && settings.activeRecordingId && !mediaReady
         )
       }
     }));
@@ -93,7 +93,7 @@
     mediaError = false;
     streamActive = false;
     publishSettings();
-    if (!settings.activeRecordingId) {
+    if (!settings.activeRecordingId || (!settings.cameraEnabled && !settings.audioMuted)) {
       publishMedia({ type: "clear", generation });
       return;
     }
@@ -147,11 +147,11 @@
 
   const defaults = {
     cameraEnabled: false,
-    audioMuted: true,
+    audioMuted: false,
     useVideoAudio: true,
     recordingRevision: 0,
     activeRecordingId: "",
-    functionKeysBlocked: true
+    functionKeysBlocked: false
   };
 
   chrome.storage.local.get(defaults, (savedSettings) => {
@@ -178,7 +178,7 @@
     if (areaName === "local" && (featureChange || recordingChange)) {
       for (const key of featureKeys) {
         if (changes[key]) {
-          settings[key] = changes[key].newValue !== false;
+          settings[key] = changes[key].newValue === true;
         }
       }
       if (changes.recordingRevision) {
@@ -187,7 +187,7 @@
       if (changes.activeRecordingId) {
         settings.activeRecordingId = changes.activeRecordingId.newValue || "";
       }
-      if (recordingChange) {
+      if (recordingChange || changes.cameraEnabled || changes.audioMuted) {
         refreshActiveVideo();
       } else {
         publishSettings();

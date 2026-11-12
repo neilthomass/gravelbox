@@ -65,8 +65,8 @@
           });
         }
         settings = {
-          cameraEnabled: event.detail.cameraEnabled !== false,
-          audioMuted: event.detail.audioMuted !== false,
+          cameraEnabled: event.detail.cameraEnabled === true,
+          audioMuted: event.detail.audioMuted === true,
           useVideoAudio: true,
           videoUrl: typeof event.detail.videoUrl === "string"
             ? event.detail.videoUrl

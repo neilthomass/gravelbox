@@ -1,7 +1,7 @@
 "use strict";
 
 globalThis.GravelboxBlocklist = {
-  defaults: ["x.com", "linkedin.com", "youtube.com", "discord.com", "discord.gg", "discordapp.com", "gmail.com", "mail.google.com", "github.com"].map(domain => ({ domain })),
+  defaults: [],
   delay: 5 * 60 * 1000,
   normalize(value) {
     const input = value.trim();

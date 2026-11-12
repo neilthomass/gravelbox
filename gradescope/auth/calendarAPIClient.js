@@ -61,10 +61,10 @@ class CalendarAPIClient {
 
         if (!response.ok) {
             const errorText = await response.text();
-            console.error(`❌ API Error: ${response.status} ${response.statusText}`, errorText);
+            console.error(`API Error: ${response.status} ${response.statusText}`, errorText);
 
             if (response.status === 401) {
-                this.tokenManager.setTokens(null, this.tokenManager.refreshToken, 0, this.tokenManager.getAuthMethod());
+                await this.tokenManager.invalidateToken();
             }
 
             throw new Error(`API request failed: ${response.status} ${response.statusText}`);
@@ -131,7 +131,7 @@ class CalendarAPIClient {
         try {
             return await this.eventCache.getExistingEvent(assignmentId);
         } catch (error) {
-            console.error(`❌ Error finding event ${assignmentId}:`, error.message);
+            console.error(`Error finding event ${assignmentId}:`, error.message);
             throw new Error(`Could not verify existing Calendar events: ${error.message}`);
         }
     }
@@ -180,7 +180,7 @@ class CalendarAPIClient {
                 await new Promise(resolve => setTimeout(resolve, 100));
 
             } catch (error) {
-                console.error(`❌ Failed to sync ${assignment.title}:`, error);
+                console.error(`Failed to sync ${assignment.title}:`, error);
                 results.errors++;
                 results.details.push({
                     assignment: assignment.title,
@@ -243,7 +243,7 @@ class CalendarAPIClient {
             return { success: true, results };
 
         } catch (error) {
-            console.error('❌ Background sync failed:', error);
+            console.error('Background sync failed:', error);
 
             await browser.storage.local.set({
                 last_auto_sync_error: {

@@ -6,6 +6,8 @@ async function extractAndSync() {
     if (runningSync) return runningSync;
 
     runningSync = (async () => {
+        const settings = await browser.storage.local.get({ gradescopeEnabled: false });
+        if (!settings.gradescopeEnabled) return { success: true, skipped: true };
         const pageType = PageDetector.detectPageType();
         let extracted;
 
@@ -25,6 +27,9 @@ async function extractAndSync() {
             ])
         ).values());
 
+        // The user may have disconnected while extraction was in progress.
+        const latest = await browser.storage.local.get({ gradescopeEnabled: false });
+        if (!latest.gradescopeEnabled) return { success: true, skipped: true };
         await browser.storage.local.set({
             assignments_latest: {
                 assignments: uniqueAssignments,
@@ -67,6 +72,12 @@ function start() {
     PageDetector.setupOptimizedDOMObserver(extractAndSync);
     extractAndSync().catch(error => console.error('Gradescope sync failed:', error));
 }
+
+browser.storage.onChanged.addListener((changes, area) => {
+    if (area === 'local' && changes.gradescopeEnabled?.newValue === true) {
+        extractAndSync().catch(error => console.error('Gradescope sync failed:', error));
+    }
+});
 
 if (!window.gradescopeCalendarSyncLoaded) {
     window.gradescopeCalendarSyncLoaded = true;

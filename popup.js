@@ -3,8 +3,8 @@
 
   const defaults = {
     cameraEnabled: false,
-    audioMuted: true,
-    functionKeysBlocked: true,
+    audioMuted: false,
+    functionKeysBlocked: false,
     newTabsBlocked: false
   };
 
@@ -17,11 +17,13 @@
   const longitudeInput = document.querySelector("#longitude");
   const NEW_LOCATION_VALUE = "__new__";
   const MANAGE_RECORDINGS_VALUE = "__manage__";
+  const status = document.querySelector("#popupStatus");
   let currentSettings = { ...defaults, activeRecordingId: "" };
 
   function openRecorder() {
-    chrome.tabs.create({ url: recorderUrl });
-    window.close();
+    chrome.tabs.create({ url: recorderUrl }).then(() => window.close()).catch(error => {
+      status.textContent = `Could not open recordings: ${error.message}`;
+    });
   }
 
   function openDatabase() {
@@ -119,17 +121,23 @@
     ...defaults,
     activeRecordingId: "",
     savedLocations: [],
-    activeLocationId: ""
+    activeLocationId: "",
+    onboardingComplete: false
   }, (settings) => {
+    if (chrome.runtime.lastError) {
+      status.textContent = "Could not load settings. Reopen the popup to try again.";
+      return;
+    }
     currentSettings = settings;
+    document.querySelector("#onboarding").hidden = settings.onboardingComplete === true;
     for (const key of Object.keys(defaults)) {
       const toggle = document.querySelector(`#${key}`);
-      toggle.checked = settings[key] !== false;
+      toggle.checked = settings[key] === true;
       toggle.addEventListener("change", () => {
-        if (key === "cameraEnabled" && toggle.checked && !selector.value) {
+        if (["cameraEnabled", "audioMuted"].includes(key) && toggle.checked && !selector.value) {
           toggle.checked = false;
-          currentSettings.cameraEnabled = false;
-          chrome.storage.local.set({ cameraEnabled: false });
+          currentSettings[key] = false;
+          chrome.storage.local.set({ [key]: false });
           openRecorder();
           return;
         }
@@ -144,7 +152,9 @@
         chrome.storage.local.set({ cameraEnabled: false });
       }
     }
-    loadRecordingChoices(settings.activeRecordingId).catch(() => {});
+    loadRecordingChoices(settings.activeRecordingId).catch(error => {
+      status.textContent = `Could not load recordings: ${error.message}`;
+    });
     loadLocationChoices(settings.savedLocations, settings.activeLocationId);
   });
 
@@ -189,6 +199,12 @@
   });
 
   locationForm.addEventListener("submit", saveLocation);
+  document.querySelector("#dismissOnboarding").addEventListener("click", async () => {
+    try {
+      await chrome.storage.local.set({ onboardingComplete: true });
+      document.querySelector("#onboarding").hidden = true;
+    } catch (error) { status.textContent = error.message; }
+  });
   chrome.storage.onChanged.addListener((changes, areaName) => {
     if (areaName !== "local") {
       return;
@@ -212,7 +228,9 @@
       );
     }
     if (changes.recordingRevision) {
-      loadRecordingChoices(currentSettings.activeRecordingId).catch(() => {});
+      loadRecordingChoices(currentSettings.activeRecordingId).catch(error => {
+        status.textContent = `Could not load recordings: ${error.message}`;
+      });
     }
   });
 })();

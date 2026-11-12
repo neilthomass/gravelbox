@@ -22,7 +22,7 @@ test("manifest registers the recorder, Gradescope sync, and all scripts parse", 
   assert.equal(manifest.action.default_popup, "popup.html");
   for (const file of [
     "content.js", "page-camera.js", "location-content.js", "location-page.js",
-    "popup.js", "blocklist.js", "blocklist-popup.js", "recorder.js", "service-worker.js",
+    "popup.js", "calendar-popup.js", "blocklist.js", "blocklist-popup.js", "recorder.js", "service-worker.js",
     "gradescope/background.js", "gradescope/contentScript.js",
     "gradescope/auth/eventCache.js",
     "gradescope/auth/tokenManager.js", "gradescope/auth/authenticationManager.js",
@@ -67,7 +67,7 @@ test("still blocks F1 through F24 without cancelling browser defaults", () => {
     },
     storage: {
       local: {
-        get: (defaults, callback) => callback(defaults)
+        get: (defaults, callback) => callback({ ...defaults, functionKeysBlocked: true })
       },
       onChanged: { addListener() {} }
     }
@@ -412,10 +412,9 @@ test("transfers the selected recording into the page world without exposing its 
   );
 });
 
-test("service worker serves an optimized copy for the existing library clip", async () => {
+test("service worker reads existing library recordings without bundled replacements", async () => {
   const fastId = "ab328293-858c-4c69-b561-81ac6f8c9028";
   const originalBlob = new Blob(["much larger original recording"]);
-  const fastBlob = new Blob(["fast MP4"], { type: "video/mp4" });
   const recording = { id: fastId, blob: originalBlob, mimeType: "video/mp4" };
   let messageListener;
   let fetchCount = 0;
@@ -450,17 +449,14 @@ test("service worker serves an optimized copy for the existing library clip", as
   };
   const chrome = {
     runtime: {
-      getURL(file) {
-        assert.equal(file, "media.mp4");
-        return "chrome-extension://private/media.mp4";
-      },
+      getURL(file) { return `chrome-extension://private/${file}`; },
       onMessage: { addListener(listener) { messageListener = listener; } }
     },
     storage: { onChanged: { addListener() {} } }
   };
   const fetch = async () => {
     fetchCount += 1;
-    return { ok: true, blob: async () => fastBlob };
+    throw new Error("Recordings must come from the user library");
   };
   const source = fs.readFileSync(path.join(root, "service-worker.js"), "utf8");
   vm.runInNewContext(source, { chrome, indexedDB, fetch, Blob, btoa, queueMicrotask });
@@ -471,9 +467,10 @@ test("service worker serves an optimized copy for the existing library clip", as
     });
   }
   const info = await ask({ type: "recording-info", recordingId: fastId });
-  assert.equal(info.size, fastBlob.size);
-  assert.notEqual(info.size, originalBlob.size);
+  assert.equal(info.size, originalBlob.size);
   const chunk = await ask({ type: "recording-chunk", recordingId: fastId, offset: 0 });
-  assert.equal(Buffer.from(chunk.data, "base64").toString(), "fast MP4");
-  assert.equal(fetchCount, 1);
+  assert.equal(Buffer.from(chunk.data, "base64").toString(), "much larger original recording");
+  assert.equal(fetchCount, 0);
+  const missing = await ask({ type: "recording-info", recordingId: "missing" });
+  assert.equal(missing.ok, false);
 });

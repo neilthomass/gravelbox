@@ -31,8 +31,9 @@ test("Gradescope support is additive and references packaged files", () => {
   );
   assert.doesNotMatch(popup, /id="gradescopeSync"/);
   assert.doesNotMatch(popup, /id="gradescopeSyncStatus"/);
-  assert.doesNotMatch(popup, /id="gradescopeEnabled"/);
-  assert.doesNotMatch(contentScript, /gradescopeEnabled/);
+  assert.match(popup, /id="calendarConnect"/);
+  assert.match(popup, /id="calendarDisconnect"/);
+  assert.match(contentScript, /gradescopeEnabled/);
 
   const workers = ["service-worker.js", "gradescope/background.js"];
   for (const worker of workers) {

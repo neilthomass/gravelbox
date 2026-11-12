@@ -20,13 +20,13 @@ class AutoSyncManager {
             delayInMinutes: this.config.AUTO_SYNC_INTERVAL,
             periodInMinutes: this.config.AUTO_SYNC_INTERVAL
         });
-        console.log(`✅ Auto-sync scheduled every ${this.config.AUTO_SYNC_INTERVAL} minutes`);
+        console.log(`Auto-sync scheduled every ${this.config.AUTO_SYNC_INTERVAL} minutes`);
     }
 
     async disableAutoSync() {
         await browser.storage.local.set({ settings_auto_sync: false });
         await browser.alarms.clear(this.config.ALARM_NAME);
-        console.log('✅ Auto-sync disabled');
+        console.log('Auto-sync disabled');
     }
 
     /**
@@ -36,7 +36,7 @@ class AutoSyncManager {
      */
     async restoreAutoSync() {
         const storage = await browser.storage.local.get('settings_auto_sync');
-        const shouldAutoSync = storage.settings_auto_sync !== false;
+        const shouldAutoSync = storage.settings_auto_sync === true;
         const alarm = await browser.alarms.get(this.config.ALARM_NAME);
 
         if (!shouldAutoSync) {
@@ -51,7 +51,7 @@ class AutoSyncManager {
                 delayInMinutes: this.config.AUTO_SYNC_INTERVAL,
                 periodInMinutes: this.config.AUTO_SYNC_INTERVAL
             });
-            console.log('✅ Auto-sync alarm restored after browser restart');
+            console.log('Auto-sync alarm restored after browser restart');
         }
 
         return true;

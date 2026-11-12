@@ -76,7 +76,7 @@ class DateParser {
                     // Format: 2025-01-15T11:59:00-08:00 or 2025-01-15T11:59:00Z
                     const timezone = this.extractTimezoneFromDatetimeString(datetime);
                     if (timezone) {
-                        console.log(`🌍 Detected timezone from Gradescope: ${timezone}`);
+                        console.log(`Detected timezone from Gradescope: ${timezone}`);
                         return timezone;
                     }
                 }
@@ -141,10 +141,10 @@ class DateParser {
     static getBrowserTimezone() {
         try {
             const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-            console.log(`🌐 Using browser timezone: ${timezone}`);
+            console.log(`Using browser timezone: ${timezone}`);
             return timezone;
         } catch (e) {
-            console.warn('⚠️ Could not detect browser timezone, defaulting to UTC');
+            console.warn('Could not detect browser timezone, defaulting to UTC');
             return 'UTC';
         }
     }
@@ -162,7 +162,7 @@ class DateParser {
         }
 
         // Tier 2: Fallback to browser timezone
-        console.log('⚠️ Could not detect timezone from Gradescope, using browser timezone');
+        console.log('Could not detect timezone from Gradescope, using browser timezone');
         return this.getBrowserTimezone();
     }
 
@@ -213,14 +213,14 @@ class DateParser {
      * Intelligently detect current semester from DOM or date
      */
     static getCurrentSemester() {
-        console.log('📅 Detecting current semester from courseList structure...');
+        console.log('Detecting current semester from courseList structure...');
 
         const firstTermElement = document.querySelector('.courseList--term');
 
         if (firstTermElement) {
             const semesterText = firstTermElement.textContent?.trim();
             if (semesterText && /^(Fall|Spring|Summer|Winter)\s+\d{4}$/.test(semesterText)) {
-                console.log(`✅ Found current semester from courseList: ${semesterText}`);
+                console.log(`Found current semester from courseList: ${semesterText}`);
                 return semesterText;
             }
         }
@@ -239,7 +239,7 @@ class DateParser {
             semester = `Summer ${year}`;
         }
 
-        console.log(`🔄 Date-based semester fallback: ${semester}`);
+        console.log(`Date-based semester fallback: ${semester}`);
         return semester;
     }
 }
