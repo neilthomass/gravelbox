@@ -14,8 +14,8 @@ test("Gradescope support is additive and references packaged files", () => {
   );
 
   assert.ok(gradescopeScript);
-  assert.equal(manifest.action.default_popup, "popup.html");
-  assert.equal(manifest.content_scripts[0].js[0], "page-camera.js");
+  assert.equal(manifest.action.default_popup, "src/popup/popup.html");
+  assert.equal(manifest.content_scripts[0].js[0], "src/media/page-camera.js");
   assert.ok(manifest.permissions.includes("identity"));
   assert.ok(manifest.permissions.includes("alarms"));
   assert.ok(manifest.permissions.includes("scripting"));
@@ -24,9 +24,9 @@ test("Gradescope support is additive and references packaged files", () => {
     assert.equal(fs.existsSync(path.join(root, file)), true, file);
   }
 
-  const popup = fs.readFileSync(path.join(root, "popup.html"), "utf8");
+  const popup = fs.readFileSync(path.join(root, "src/popup/popup.html"), "utf8");
   const contentScript = fs.readFileSync(
-    path.join(root, "gradescope/contentScript.js"),
+    path.join(root, "src/gradescope/contentScript.js"),
     "utf8"
   );
   assert.doesNotMatch(popup, /id="gradescopeSync"/);
@@ -35,10 +35,10 @@ test("Gradescope support is additive and references packaged files", () => {
   assert.match(popup, /id="calendarDisconnect"/);
   assert.match(contentScript, /gradescopeEnabled/);
 
-  const workers = ["service-worker.js", "gradescope/background.js"];
+  const workers = ["src/background/service-worker.js", "src/gradescope/background.js"];
   for (const worker of workers) {
     const source = fs.readFileSync(path.join(root, worker), "utf8");
-    for (const match of source.matchAll(/["'](gradescope\/[^"']+\.js)["']/g)) {
+    for (const match of source.matchAll(/["']((?:src|vendor)\/[^"']+\.js)["']/g)) {
       assert.equal(fs.existsSync(path.join(root, match[1])), true, match[1]);
     }
   }
@@ -65,7 +65,7 @@ test("calendar sync creates a one-day all-day event and course-scoped key", asyn
     self: {}, EventCache, console: quietConsole, fetch, URLSearchParams, setTimeout
   };
   const source = fs.readFileSync(
-    path.join(root, "gradescope/auth/calendarAPIClient.js"),
+    path.join(root, "src/gradescope/auth/calendarAPIClient.js"),
     "utf8"
   );
   vm.runInNewContext(source, context);

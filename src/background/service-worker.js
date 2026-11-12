@@ -1,8 +1,8 @@
 "use strict";
 
 if (typeof importScripts === "function") {
-  importScripts("gradescope/background.js");
-  importScripts("blocklist.js");
+  importScripts(chrome.runtime.getURL("src/gradescope/background.js"));
+  importScripts(chrome.runtime.getURL("src/blocking/blocklist.js"));
 }
 
 const DB_NAME = "gravelbox-recordings";

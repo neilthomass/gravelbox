@@ -43,7 +43,7 @@ function loadWorker(settings = {}, tabs = []) {
       }
     }
   };
-  const source = fs.readFileSync(path.join(root, "blocklist.js"), "utf8") + "\n" + fs.readFileSync(path.join(root, "service-worker.js"), "utf8");
+  const source = fs.readFileSync(path.join(root, "src/blocking/blocklist.js"), "utf8") + "\n" + fs.readFileSync(path.join(root, "src/background/service-worker.js"), "utf8");
   const context = vm.createContext({
     chrome,
     URL,
@@ -111,7 +111,7 @@ test("dynamic blocklist honors edits, an empty list, and background removal dead
 
 test("blocklist normalizes website inputs and enforces the exact removal deadline", async () => {
   const context = { URL };
-  vm.runInNewContext(fs.readFileSync(path.join(root, "blocklist.js"), "utf8"), context);
+  vm.runInNewContext(fs.readFileSync(path.join(root, "src/blocking/blocklist.js"), "utf8"), context);
   const config = context.GravelboxBlocklist;
   assert.equal(config.normalize(" HTTPS://WWW.Example.com/path?q=1 "), "example.com");
   assert.equal(config.normalize("mail.google.com"), "mail.google.com");
@@ -194,9 +194,9 @@ test("fresh installs allow formerly default-blocked sites", async () => {
 
 test("recording manager remains accessible when new tabs are blocked", async () => {
   const worker = loadWorker({ newTabsBlocked: true }, [{ id: 1 }]);
-  await worker.onCreated({ id: 2, pendingUrl: "chrome-extension://gravelbox/recorder.html#library" });
-  await worker.onCreated({ id: 3, url: "chrome-extension://gravelbox/popup.html" });
-  await worker.onCreated({ id: 4, url: "https://example.com/?next=chrome-extension://gravelbox/recorder.html" });
+  await worker.onCreated({ id: 2, pendingUrl: "chrome-extension://gravelbox/src/recorder/recorder.html#library" });
+  await worker.onCreated({ id: 3, url: "chrome-extension://gravelbox/src/popup/popup.html" });
+  await worker.onCreated({ id: 4, url: "https://example.com/?next=chrome-extension://gravelbox/src/recorder/recorder.html" });
   assert.deepEqual(worker.removed, [4]);
 });
 

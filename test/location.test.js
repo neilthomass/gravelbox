@@ -21,7 +21,7 @@ test("location bridge replies with native fallback when extension storage is una
       } }
     };
     vm.runInNewContext(
-      fs.readFileSync(path.join(root, "location-content.js"), "utf8"),
+      fs.readFileSync(path.join(root, "src/location/content.js"), "utf8"),
       {
         chrome,
         window: {
@@ -44,10 +44,10 @@ test("location bridge replies with native fallback when extension storage is una
 test("loads the location bridge in both page and isolated worlds", () => {
   const manifest = JSON.parse(fs.readFileSync(path.join(root, "manifest.json")));
   const page = manifest.content_scripts.find((entry) =>
-    entry.js.includes("location-page.js")
+    entry.js.includes("src/location/page.js")
   );
   const content = manifest.content_scripts.find((entry) =>
-    entry.js.includes("location-content.js")
+    entry.js.includes("src/location/content.js")
   );
 
   assert.equal(page.world, "MAIN");
@@ -90,7 +90,7 @@ test("spoofs geolocation and falls back to the native location", async () => {
   };
 
   vm.runInNewContext(
-    fs.readFileSync(path.join(root, "location-page.js"), "utf8"),
+    fs.readFileSync(path.join(root, "src/location/page.js"), "utf8"),
     { window, navigator, CustomEvent, Map, Date, NaN, Promise, Object }
   );
 
@@ -149,7 +149,7 @@ test("location storage bridge returns the selected saved coordinates", () => {
   });
 
   vm.runInNewContext(
-    fs.readFileSync(path.join(root, "location-content.js"), "utf8"),
+    fs.readFileSync(path.join(root, "src/location/content.js"), "utf8"),
     { window, chrome, CustomEvent }
   );
   window.dispatchEvent(new CustomEvent("__gravelbox_location_request__", {

@@ -12,29 +12,29 @@ test("loads the override in the page's main world at document start", () => {
   assert.equal(pageScript.world, "MAIN");
   assert.equal(pageScript.run_at, "document_start");
   assert.equal(pageScript.all_frames, true);
-  assert.deepEqual(pageScript.js, ["page-camera.js"]);
+  assert.deepEqual(pageScript.js, ["src/media/page-camera.js"]);
 });
 
 test("manifest registers the recorder, Gradescope sync, and all scripts parse", () => {
   const manifest = JSON.parse(fs.readFileSync(path.join(root, "manifest.json")));
   assert.equal(manifest.web_accessible_resources, undefined);
-  assert.equal(manifest.background.service_worker, "service-worker.js");
-  assert.equal(manifest.action.default_popup, "popup.html");
+  assert.equal(manifest.background.service_worker, "src/background/service-worker.js");
+  assert.equal(manifest.action.default_popup, "src/popup/popup.html");
   for (const file of [
-    "content.js", "page-camera.js", "location-content.js", "location-page.js",
-    "popup.js", "calendar-popup.js", "blocklist.js", "blocklist-popup.js", "recorder.js", "service-worker.js",
-    "gradescope/background.js", "gradescope/contentScript.js",
-    "gradescope/auth/eventCache.js",
-    "gradescope/auth/tokenManager.js", "gradescope/auth/authenticationManager.js",
-    "gradescope/auth/calendarAPIClient.js", "gradescope/auth/autoSyncManager.js",
-    "gradescope/utils/browserDetector.js", "gradescope/utils/dateParser.js",
-    "gradescope/utils/assignmentParser.js", "gradescope/utils/pageDetector.js"
+    "src/media/content.js", "src/media/page-camera.js", "src/location/content.js", "src/location/page.js",
+    "src/popup/popup.js", "src/popup/calendar-popup.js", "src/blocking/blocklist.js", "src/popup/blocklist-popup.js", "src/recorder/recorder.js", "src/background/service-worker.js",
+    "src/gradescope/background.js", "src/gradescope/contentScript.js",
+    "src/gradescope/auth/eventCache.js",
+    "src/gradescope/auth/tokenManager.js", "src/gradescope/auth/authenticationManager.js",
+    "src/gradescope/auth/calendarAPIClient.js", "src/gradescope/auth/autoSyncManager.js",
+    "src/gradescope/utils/browserDetector.js", "src/gradescope/utils/dateParser.js",
+    "src/gradescope/utils/assignmentParser.js", "src/gradescope/utils/pageDetector.js"
   ]) {
     const source = fs.readFileSync(path.join(root, file), "utf8");
     assert.doesNotThrow(() => new Function(source), file);
   }
-  const popup = fs.readFileSync(path.join(root, "popup.html"), "utf8");
-  const recorder = fs.readFileSync(path.join(root, "recorder.html"), "utf8");
+  const popup = fs.readFileSync(path.join(root, "src/popup/popup.html"), "utf8");
+  const recorder = fs.readFileSync(path.join(root, "src/recorder/recorder.html"), "utf8");
   assert.match(popup, /id="cameraEnabled"/);
   assert.match(popup, /id="locationSelector"/);
   assert.match(popup, /id="locationName"/);
@@ -72,7 +72,7 @@ test("still blocks F1 through F24 without cancelling browser defaults", () => {
       onChanged: { addListener() {} }
     }
   };
-  const source = fs.readFileSync(path.join(root, "content.js"), "utf8");
+  const source = fs.readFileSync(path.join(root, "src/media/content.js"), "utf8");
   vm.runInNewContext(source, { window, CustomEvent, chrome });
 
   for (let number = 1; number <= 24; number += 1) {
@@ -169,7 +169,7 @@ test("exposes a 1080p MacBook Air camera without an associated audio device", as
     getAudioTracks() { return this.tracks.filter((track) => track.kind === "audio"); }
   }
 
-  const source = fs.readFileSync(path.join(root, "page-camera.js"), "utf8");
+  const source = fs.readFileSync(path.join(root, "src/media/page-camera.js"), "utf8");
   vm.runInNewContext(source, {
     window,
     document,
@@ -332,7 +332,7 @@ test("transfers the selected recording into the page world without exposing its 
     addTrack(track) { this.tracks.push(track); }
     getVideoTracks() { return this.tracks; }
   }
-  const pageSource = fs.readFileSync(path.join(root, "page-camera.js"), "utf8");
+  const pageSource = fs.readFileSync(path.join(root, "src/media/page-camera.js"), "utf8");
   vm.runInNewContext(pageSource, {
     window,
     document,
@@ -389,7 +389,7 @@ test("transfers the selected recording into the page world without exposing its 
       onChanged: { addListener() {} }
     }
   };
-  const contentSource = fs.readFileSync(path.join(root, "content.js"), "utf8");
+  const contentSource = fs.readFileSync(path.join(root, "src/media/content.js"), "utf8");
   vm.runInNewContext(contentSource, { window, CustomEvent, chrome, queueMicrotask });
 
   let state;
@@ -458,7 +458,7 @@ test("service worker reads existing library recordings without bundled replaceme
     fetchCount += 1;
     throw new Error("Recordings must come from the user library");
   };
-  const source = fs.readFileSync(path.join(root, "service-worker.js"), "utf8");
+  const source = fs.readFileSync(path.join(root, "src/background/service-worker.js"), "utf8");
   vm.runInNewContext(source, { chrome, indexedDB, fetch, Blob, btoa, queueMicrotask });
 
   function ask(message) {

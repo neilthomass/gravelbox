@@ -8,7 +8,7 @@
     newTabsBlocked: false
   };
 
-  const recorderUrl = chrome.runtime.getURL("recorder.html#library");
+  const recorderUrl = chrome.runtime.getURL("src/recorder/recorder.html#library");
   const selector = document.querySelector("#recordingSelector");
   const locationSelector = document.querySelector("#locationSelector");
   const locationForm = document.querySelector("#locationForm");

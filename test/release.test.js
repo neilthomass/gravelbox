@@ -33,7 +33,7 @@ function loadAuth(initial = {}) {
   const context = { self: {}, browser: { storage }, chrome };
   vm.createContext(context);
   for (const file of ['tokenManager', 'authenticationManager']) {
-    vm.runInContext(fs.readFileSync(path.join(root, `gradescope/auth/${file}.js`), 'utf8'), context);
+    vm.runInContext(fs.readFileSync(path.join(root, `src/gradescope/auth/${file}.js`), 'utf8'), context);
   }
   const tokens = new context.self.TokenManager();
   const auth = new context.self.AuthenticationManager({ CHROME_EXTENSION_CLIENTS: { 'extension-id': 'public-client-id' } }, tokens);
@@ -114,8 +114,8 @@ test('fresh content defaults leave function keys, camera, and microphone alone',
       }
     }
   });
-  vm.runInContext(fs.readFileSync(path.join(root, 'page-camera.js'), 'utf8'), context);
-  vm.runInContext(fs.readFileSync(path.join(root, 'content.js'), 'utf8'), context);
+  vm.runInContext(fs.readFileSync(path.join(root, 'src/media/page-camera.js'), 'utf8'), context);
+  vm.runInContext(fs.readFileSync(path.join(root, 'src/media/content.js'), 'utf8'), context);
   for (const fn of listeners.get('keydown')) fn({ key: 'F1', stopImmediatePropagation() { assert.fail('F1 should pass through'); } });
   const settings = published.find(e => e.type === '__gravelbox_settings__').detail;
   assert.equal(settings.cameraEnabled, false);
@@ -140,7 +140,7 @@ test('a saved clip is not sent to a webpage when both media overrides are off', 
       }
     }
   };
-  vm.runInNewContext(fs.readFileSync(path.join(root, 'content.js'), 'utf8'), context);
+  vm.runInNewContext(fs.readFileSync(path.join(root, 'src/media/content.js'), 'utf8'), context);
   assert.equal(requests, 0);
   assert.equal(events.at(-1).detail.type, 'clear');
   settingsChanged({ audioMuted: { newValue: true } }, 'local');
@@ -157,7 +157,7 @@ test('Gradescope does not parse or store assignments without opt-in', async () =
     PageDetector: { detectPageType() { assert.fail('Must not inspect assignments before opt-in'); } }
   };
   vm.createContext(context);
-  vm.runInContext(fs.readFileSync(path.join(root, 'gradescope/contentScript.js'), 'utf8'), context);
+  vm.runInContext(fs.readFileSync(path.join(root, 'src/gradescope/contentScript.js'), 'utf8'), context);
   const result = await vm.runInContext('extractAndSync()', context);
   assert.equal(result.skipped, true);
   assert.deepEqual(storage.data, {});
@@ -168,7 +168,7 @@ test('worker startup neither seeds recordings nor opens a recording database', (
     runtime: { onMessage: { addListener() {} } },
     storage: { onChanged: { addListener() {} } }
   };
-  vm.runInNewContext(fs.readFileSync(path.join(root, 'service-worker.js'), 'utf8'), {
+  vm.runInNewContext(fs.readFileSync(path.join(root, 'src/background/service-worker.js'), 'utf8'), {
     chrome, indexedDB: { open() { assert.fail('Fresh install must not seed recordings'); } },
     fetch() { assert.fail('No recording should be fetched'); }
   });

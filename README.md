@@ -1,38 +1,21 @@
-Remember, the browser is a sandbox. Please don't eat the tabs.
+Remember, the browser is a sandbox. This is my bucket of questionable tools.
 
 # Gravelbox
 
-A Chrome extension for blocking distractions, looping recorded camera/audio,
-overriding location, and syncing Gradescope assignments to Google Calendar.
+Gravelbox is a Chrome extension for blocking distractions, looping recorded camera/audio, overriding location, and syncing Gradescope assignments to Google Calendar.
 
 ## Install
 
-1. Open `chrome://extensions` and enable **Developer mode**.
-2. Click **Load unpacked** and select this folder.
-3. Open the Gravelbox popup and choose what to enable.
-
-New installs start with everything off, an empty blocklist, and no recordings.
-Existing saved settings and recordings survive updates.
+To install, open chrome://extensions, enable Developer mode, click Load unpacked, and select this folder. Open the Gravelbox popup to choose what to enable. Everything starts off, with no blocked sites or recordings. Saved settings and recordings survive updates.
 
 ## Controls
 
-- **Tab blocking:** Add sites to close matching tabs, including subdomains.
-  Removing a site takes five minutes. **Block new tabs** allows one tab per
-  window and keeps Gravelbox pages accessible.
-- **Video:** Choose **Manage recordings…** to record a clip, then select it to
-  loop. The virtual microphone uses its audio. Recordings stay in browser
-  storage until you use them on a website or download them.
-- **Location:** Save coordinates or select **Use real location**.
-- **Function keys:** Stop websites receiving F1–F24. Chrome shortcuts still work.
-- **Gradescope calendar:** Connect in the popup to sync due dates from pages you
-  visit. Sync also runs daily. Disconnect stops collection and future syncs;
-  events already added to Calendar stay there. Requires Google Chrome.
+Add sites under Tab blocking to close matching tabs, including subdomains. Removing a site takes five minutes. Block new tabs allows one tab per window and keeps Gravelbox pages accessible.
 
-Reload existing webpages after updating the extension. Restart a site's camera
-stream after changing clips.
+Choose Manage recordings to record a clip and select it to loop. The virtual microphone uses its audio. Recordings stay in browser storage until you use them on a website or download them.
 
-## Development
+Save coordinates to override your location, or select Use real location to turn it off. Function-key blocking stops websites receiving F1–F24 while keeping Chrome shortcuts working.
 
-Run `node --test test/*.test.js`.
-For the camera demo, run `python3 -m http.server 8000` and open
-`http://localhost:8000/test.html`.
+Connect Google Calendar in the popup to sync due dates from Gradescope pages you visit. Sync also runs daily. Disconnect stops collection and future syncs; events already added to Calendar stay there.
+
+Reload webpages after updating the extension. Restart a site's camera stream after changing clips.

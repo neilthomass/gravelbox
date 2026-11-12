@@ -1,14 +1,14 @@
 "use strict";
 
-importScripts(
-  "gradescope/lib/browser-polyfill.js",
-  "gradescope/utils/browserDetector.js",
-  "gradescope/auth/eventCache.js",
-  "gradescope/auth/tokenManager.js",
-  "gradescope/auth/authenticationManager.js",
-  "gradescope/auth/calendarAPIClient.js",
-  "gradescope/auth/autoSyncManager.js"
-);
+importScripts(...[
+  "vendor/browser-polyfill.js",
+  "src/gradescope/utils/browserDetector.js",
+  "src/gradescope/auth/eventCache.js",
+  "src/gradescope/auth/tokenManager.js",
+  "src/gradescope/auth/authenticationManager.js",
+  "src/gradescope/auth/calendarAPIClient.js",
+  "src/gradescope/auth/autoSyncManager.js"
+].map(path => chrome.runtime.getURL(path)));
 
 const GRADESCOPE_CONFIG = {
   CALENDAR_API_BASE: "https://www.googleapis.com/calendar/v3",
@@ -111,7 +111,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   (async () => {
     await gradescopeInitialization;
     if (["gradescopeAuthenticate", "gradescopeDisconnect"].includes(message.action)
-        && sender.url !== chrome.runtime.getURL("popup.html")) {
+        && sender.url !== chrome.runtime.getURL("src/popup/popup.html")) {
       throw new Error("Manage your Calendar connection from the extension popup.");
     }
     if (["gradescopeSyncToCalendar", "gradescopePerformBackgroundSync"].includes(message.action)
